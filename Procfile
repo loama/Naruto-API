@@ -1,2 +1,2 @@
-release: npm install && npm run migrate
+release: npm install
 web: node index.js

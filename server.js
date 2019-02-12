@@ -6,6 +6,7 @@ const app = express()
 const cors = require('cors')
 
 // FUNCTIONS IMPORTS
+const main = require('./functions/main')
 const helpers = require('./functions/helpers')
 
 app
@@ -16,6 +17,8 @@ app
 
 // V1
   .get('/v1', (req, res) => indexV1(req, res))
+
+  .get('/v1/fetchData', (req, res) => main.fetchData(req, res))
 
   // catch all routes, 404
   .all('*', (req, res) => notFound(req, res))
