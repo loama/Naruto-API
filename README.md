@@ -13,14 +13,14 @@ Heroku to host everything
 
 * <1s response time in any endpoint
 
-* Continuous Integration
+* Continuous Integration with Travis
 
 * GitFlow
 
-* Logs of every event
-
 ### Future Features
-* TDD :soon:
+* Logs of every event :soon:
+
+* TDD
 
 * Micro service architecture :soon:
 
@@ -58,7 +58,7 @@ GET    | /v1 | v1 index      | useful to check that you are correctly connecting
 
   This will run with nodeman, which will be watching for changes in files to reload them on save.
 
-## Devops
+#### Devops
 The app runs on [heroku](heroku.com), master branch runs on production, development runs on qa.
 
 #### Contributing
