@@ -1,3 +1,4 @@
+const db = require('../db')
 const helpers = require('./helpers.js')
 
 const rp = require('request-promise')
@@ -15,52 +16,8 @@ exports.fetchData = async function (req, res) {
 
   let charactersComplete = {}
 
-  let testingCharacterNames = {
-    'Tajima Uchiha': {
-      title: 'Tajima Uchiha',
-      href: '/wiki/Tajima_Uchiha',
-      thumbnail: 'https://vignette.wikia.nocookie.net/naruto/images/2/26/Tajima_Uchiha.png/revision/latest/window-crop/width/40/x-offset/0/y-offset/31/window-width/819/window-height/614?cb=20140710125908'
-    },
-    'Takajō Torikai': {
-      title: 'Takajō Torikai',
-      href: '/wiki/Takaj%C5%8D_Torikai',
-      thumbnail: 'https://vignette.wikia.nocookie.net/naruto/images/4/4e/Takajo_Torikai.png/revision/latest/window-crop/width/40/x-offset/0/y-offset/7/window-width/154/window-height/116?cb=20150807091226'
-    },
-    Takamaru: {
-      title: 'Takamaru',
-      href: '/wiki/Takamaru',
-      thumbnail: 'https://vignette.wikia.nocookie.net/naruto/images/1/1e/Takamaru.png/revision/latest/window-crop/width/40/x-offset/0/y-offset/0/window-width/1429/window-height/1072?cb=20150731141252'
-    },
-    'Takanami Senka':
-     { title: 'Takanami Senka',
-       href: '/wiki/Takanami_Senka',
-       thumbnail: 'https://vignette.wikia.nocookie.net/naruto/images/0/0e/Takanami.png/revision/latest/window-crop/width/40/x-offset/0/y-offset/0/window-width/1441/window-height/1080?cb=20181211061120' },
-    Takishi:
-     { title: 'Takishi',
-       href: '/wiki/Takishi',
-       thumbnail: 'https://vignette.wikia.nocookie.net/naruto/images/a/a8/Takishi.png/revision/latest/window-crop/width/40/x-offset/43/y-offset/0/window-width/1168/window-height/875?cb=20140206163004'
-     },
-    Taku:
-     { title: 'Taku',
-       href: '/wiki/Taku',
-       thumbnail: 'https://vignette.wikia.nocookie.net/naruto/images/7/73/Taku.png/revision/latest/window-crop/width/40/x-offset/0/y-offset/14/window-width/328/window-height/246?cb=20120928102858'
-     },
-    Tamae:
-     { title: 'Tamae',
-       href: '/wiki/Tamae',
-       thumbnail: 'https://vignette.wikia.nocookie.net/naruto/images/6/66/Tamae.png/revision/latest/window-crop/width/40/x-offset/0/y-offset/29/window-width/891/window-height/668?cb=20141110133710' },
-    Tamaki:
-     { title: 'Tamaki',
-       href: '/wiki/Tamaki',
-       thumbnail: 'https://vignette.wikia.nocookie.net/naruto/images/6/68/Tamaki.png/revision/latest/window-crop/width/40/x-offset/0/y-offset/26/window-width/836/window-height/627?cb=20170311140844' },
-    Tamao:
-     { title: 'Tamao',
-       href: '/wiki/Tamao',
-       thumbnail: 'https://vignette.wikia.nocookie.net/naruto/images/f/f7/Tamao.png/revision/latest/window-crop/width/40/x-offset/0/y-offset/0/window-width/1441/window-height/1080?cb=20161029000818' },
-  }
-
-  for (var key in testingCharacterNames) {
-    let characterInfo = await characterDetails(testingCharacterNames[key])
+  for (var key in charactersNames) {
+    let characterInfo = await characterDetails(charactersNames[key])
     charactersComplete[key] = characterInfo
   }
 
@@ -152,6 +109,47 @@ async function characterDetails (characterData) {
       mainImg: mainImg
     }
 
+    let tocString = ''
+    let endingChar
+    for (var i = 0; i < toc.length; i++) {
+      if (i < toc.length - 1) {
+        endingChar = ','
+      } else {
+        endingChar = ''
+      }
+      tocString = tocString + toc[i] + endingChar
+    }
+
+    db.sequelize.query(`
+      INSERT INTO "Characters" (title, href, thumbnail, description, toc, html_content, "createdAt", "updatedAt")
+      VALUES (:title, :href, :thumbnail, :description, :toc, :html_content, :createdAt, :updatedAt)
+      ON CONFLICT (title) DO UPDATE
+      SET href = :href,
+          thumbnail = :thumbnail,
+          description = :description,
+          toc = :toc,
+          html_content = :html_content,
+          "updatedAt" = :updatedAt;
+      `,
+    { replacements:
+      {
+        title: character.title,
+        href: character.href,
+        thumbnail: character.thumbnail,
+        description: JSON.stringify(character.description),
+        toc: tocString,
+        html_content: character.htmlContent,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+    type: db.sequelize.QueryTypes.INSERT })
+      .then(person => {
+        return character
+      })
+      .catch(err => {
+        console.log(err)
+        return 1
+      })
     return character
   } catch (error) {
     console.log(error)
