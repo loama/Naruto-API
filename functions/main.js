@@ -24,6 +24,33 @@ exports.fetchData = async function (req, res) {
   helpers.result(req, res, 200, 'success', 'data fetched', charactersComplete)
 }
 
+exports.getCharacters = function (req, res) {
+  db.sequelize.query('SELECT id, title, href, thumbnail, description, toc, "createdAt", "updatedAt" FROM "Characters" ORDER BY id', {
+    type: db.sequelize.QueryTypes.SELECT })
+    .then(characters => {
+      for (let i = 0; i < characters.length; i++) {
+        characters[i]['toc'] = characters[i]['toc'].split(',')
+      }
+      helpers.result(req, res, 200, 'success', 'characters fetched', characters)
+    }).catch(err => {
+      console.log(err)
+      helpers.result(req, res, 500, 'error', 'something went wrong', {})
+    })
+}
+
+exports.getCharacter = function (req, res) {
+  db.sequelize.query('SELECT * FROM "Characters" WHERE lower("title") = :title',
+    { replacements:
+      {
+        title: decodeURIComponent(req.params.title.toLowerCase())
+      },
+    type: db.sequelize.QueryTypes.SELECT })
+    .then(character => {
+      character[0]['toc'] = character[0]['toc'].split(',')
+      helpers.result(req, res, 200, 'success', 'character fetched', character[0])
+    })
+}
+
 function fetchAlphabetLetters (html) {
   let alphabetShortcuts = $('ul[class=category-page__alphabet-shortcuts] > li[class=category-page__alphabet-shortcut]', html)
 

@@ -20,6 +20,10 @@ app
 
   .get('/v1/fetchData', (req, res) => main.fetchData(req, res))
 
+  .get('/v1/characters', (req, res) => main.getCharacters(req, res))
+
+  .get('/v1/characters/:title', (req, res) => main.getCharacter(req, res))
+
   // catch all routes, 404
   .all('*', (req, res) => notFound(req, res))
 
