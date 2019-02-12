@@ -1,6 +1,11 @@
 # Naruto API
 Here lives the core of the Naruto API which constantly fetches info from the [Naruto wikia page](​http://naruto.wikia.com/wiki/Category:Characters), saves them to a Postgres DB and allows access to the info in a handy JSON format.
 
+## ROUTES
+All characters: http://naruto-api-prod.herokuapp.com/v1/characters
+Specific one: http://naruto-api-prod.herokuapp.com/v1/characters/:title
+         e.g: http://naruto-api-prod.herokuapp.com/v1/characters/Abiru
+
 ## Architecture
 NodeJS for API endpoints
 NodeJS for worker function to update the data automatically
