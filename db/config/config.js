@@ -4,7 +4,7 @@ if (process.env.DATABASE_URL !== undefined) {
   url = process.env.DATABASE_URL
 } else {
   // the shared development db, we change this string if we are deploying to either staging on production on heroku
-  url = 'postgres://eonyhyqrlaxqgr:ae77b886bed028324c4b644c6059b74aba8446100797169d9e0edfe4483b0f78@ec2-23-23-184-76.compute-1.amazonaws.com:5432/d9fqmn88kg4hlv'
+  url = 'postgres://hsaufbvwqtkcmy:a56eebf22222b1155a018501ca1e4ab700787d0718483f2afb7fb4ce5aecd621@ec2-23-23-92-204.compute-1.amazonaws.com:5432/dpvpk3a5mlm91'
 }
 
 const WORKERS = process.env.WEB_CONCURRENCY || 1 // we need to update this if we upgrade dyno type. More info on https://devcenter.heroku.com/articles/node-concurrency
